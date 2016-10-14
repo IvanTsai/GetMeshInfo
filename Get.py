@@ -33,27 +33,28 @@ class GetInfo(object):
 
 	def PortalIP(self):
 		PORTAL=["00:78:cd:00:13:b0","00:78:cd:00:15:2c","00:78:cd:00:13:00"]
-		content = []
+		saturncontent = []
 		ip = ""
 		for ix in range(0,(len(PORTAL)),1):
+			print ix
 			stdin, stdout, stderr = self.client.exec_command("cat /proc/net/arp | grep "+ PORTAL[ix] +"| awk '{print $1}'")
-			#print stdout.read()
-			if stdout.read() :
-				print stdout.read()
-				ip = stdout.read()
+                        iip = stdout.readlines()
+			if iip :
+				print iip
 			else:
-				ip = "192.168.8.1"
-			print ip	
-			#self.ScpLog(ip)
-			#self.client.exec_command("cp /home/ivts/iwinfo-ath0.txt /home/ivts/iwinfo-ath0.txt.'"ix"'")
-			#os.system("cp /home/ivts/iwinfo-ath0.txt /home/ivts/iwinfo-ath0.txt." + `ix`)
+				iip = ["192.168.8.1"]
+				print iip
+                        saturncontent += iip
+                        self.ScpLog(''.join(iip))
+                        os.system("cp /home/ivts/GetMeshInfo/rwdagent.log /home/ivts/GetMeshInfo/rwdagent.log." + `ix`)
 
 	def ScpLog(self,slave):
+                print "ip=" + slave
 		self.ssh = paramiko.SSHClient()
 		self.ssh.set_missing_host_key_policy(client.AutoAddPolicy())
 		self.ssh.connect(slave, 22,  self.ssh_client_user, self.ssh_client_pwd)
 		self.scp = SCPClient(self.ssh.get_transport())
-		self.scp.get('/tmp/iwinfo-ath0.txt')
+		self.scp.get('/tmp/rwdagent.log')
 		self.scp.close()
 
 if __name__ == '__main__':
